@@ -2,10 +2,11 @@ import axios from 'axios';
 import mockAPI from './mockData';
 
 // API base URL - change this when you have a backend
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// API base URL - auto-detects environment
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
 
-// Use mock API for development
-const USE_MOCK_API = import.meta.env.VITE_USE_MOCK_API !== 'false';
+// Use mock API for development (default to false in PROD)
+const USE_MOCK_API = import.meta.env.VITE_USE_MOCK_API ? import.meta.env.VITE_USE_MOCK_API === 'true' : !import.meta.env.PROD;
 
 // Create axios instance
 const apiClient = axios.create({
