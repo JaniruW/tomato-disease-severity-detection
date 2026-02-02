@@ -275,10 +275,9 @@ def analyze_image():
         overlay = gradcam.apply_overlay(img_array, cam, alpha=0.4)
         
         # Convert to base64 for JSON response
-        def image_to_base64(img_array):
-            """Convert numpy array to base64 string"""
-            img_rgb = cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB) if len(img_array.shape) == 3 else img_array
-            _, buffer = cv2.imencode('.jpg', img_rgb)
+        def image_to_base64(img_bgr):
+            """Convert BGR numpy array to base64 string"""
+            _, buffer = cv2.imencode('.jpg', img_bgr)
             return base64.b64encode(buffer).decode('utf-8')
         
         # Generate heatmap visualization
