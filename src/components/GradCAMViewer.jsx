@@ -12,6 +12,15 @@ const GradCAMViewer = ({ gradcam, diseaseName }) => {
 
     const { original, heatmap, overlay } = gradcam;
 
+    // Helper to handle both base64 and URLs
+    const formatImageSrc = (src) => {
+        if (!src) return '';
+        if (src.startsWith('data:') || src.startsWith('blob:') || src.startsWith('http')) {
+            return src;
+        }
+        return `data:image/jpeg;base64,${src}`;
+    };
+
     return (
         <Card
             title="Explainable AI Visualization (Grad-CAM)"
@@ -95,12 +104,13 @@ const GradCAMViewer = ({ gradcam, diseaseName }) => {
 
                 {/* Image Display */}
                 <div className="bg-gray-100 rounded-lg p-4">
+
                     {viewMode === 'side-by-side' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <p className="text-sm font-medium text-gray-700 mb-2">Original Image</p>
                                 <img
-                                    src={`data:image/jpeg;base64,${original}`}
+                                    src={formatImageSrc(original)}
                                     alt="Original leaf"
                                     className="w-full h-64 object-contain bg-white rounded-lg shadow-sm"
                                 />
@@ -108,7 +118,7 @@ const GradCAMViewer = ({ gradcam, diseaseName }) => {
                             <div>
                                 <p className="text-sm font-medium text-gray-700 mb-2">Grad-CAM Heatmap</p>
                                 <img
-                                    src={`data:image/jpeg;base64,${heatmap || original}`}
+                                    src={formatImageSrc(heatmap || original)}
                                     alt="Grad-CAM heatmap"
                                     className="w-full h-64 object-contain bg-white rounded-lg shadow-sm"
                                 />
@@ -120,7 +130,7 @@ const GradCAMViewer = ({ gradcam, diseaseName }) => {
                         <div className="space-y-4">
                             <div>
                                 <img
-                                    src={`data:image/jpeg;base64,${overlay || original}`}
+                                    src={formatImageSrc(overlay || original)}
                                     alt="Grad-CAM overlay"
                                     className="w-full h-96 object-contain bg-white rounded-lg shadow-sm"
                                 />
@@ -136,7 +146,7 @@ const GradCAMViewer = ({ gradcam, diseaseName }) => {
                     {viewMode === 'original' && (
                         <div>
                             <img
-                                src={`data:image/jpeg;base64,${original}`}
+                                src={formatImageSrc(original)}
                                 alt="Original leaf"
                                 className="w-full h-96 object-contain bg-white rounded-lg shadow-sm mx-auto"
                             />
@@ -146,7 +156,7 @@ const GradCAMViewer = ({ gradcam, diseaseName }) => {
                     {viewMode === 'heatmap' && (
                         <div>
                             <img
-                                src={`data:image/jpeg;base64,${heatmap || original}`}
+                                src={formatImageSrc(heatmap || original)}
                                 alt="Grad-CAM heatmap"
                                 className="w-full h-96 object-contain bg-white rounded-lg shadow-sm mx-auto"
                             />
