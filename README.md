@@ -1,3 +1,14 @@
+---
+title: Tomato Disease Detection
+emoji: 🍅
+colorFrom: green
+colorTo: red
+sdk: docker
+pinned: false
+app_file: app.py
+app_port: 7860
+---
+
 # Plant Disease Detection System
 
 A comprehensive React-based frontend application for AI-powered plant disease detection with severity analysis and treatment recommendations.
