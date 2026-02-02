@@ -2,6 +2,8 @@
 FROM node:18-alpine as build
 WORKDIR /app
 COPY package*.json ./
+# Increase memory for build
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm ci
 COPY . .
 RUN npm run build
@@ -15,6 +17,9 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
+# Create user with ID 1000 first
+RUN useradd -m -u 1000 user
+
 WORKDIR /app
 
 # Copy backend requirements and install
@@ -23,29 +28,24 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend code
 COPY backend/ .
-# Copy the trained model (ensure it's in the backend folder or root)
-# The current app expects "../disease_severity_model.pth". 
-# In Docker, we'll put it in the root or adjust path. 
-# Let's copy it to /app/ and update app behavior if needed, or simply put it where app expects.
-# If app is in /app (WORKDIR), and model is at ../model.pth, it looks at /model.pth.
-# But inside container WORKDIR is /app.
-# So ".." from /app is /.
-COPY disease_severity_model.pth /disease_severity_model.pth
 
-# Copy frontend build from Stage 1 to /app/dist
+# Copy model (Handle potential LFS pointer vs real file)
+COPY disease_severity_model.pth /app/disease_severity_model.pth
+
+# Copy frontend build from Stage 1
 COPY --from=build /app/dist ./dist
 
-# Create uploads folder & set permissions for non-root user
-RUN mkdir -p uploads && chmod 777 uploads
+# Create uploads folder
+RUN mkdir -p uploads
 
-# Create a non-root user (Hugging Face requirement)
-RUN useradd -m -u 1000 user
+# FIX PERMISSIONS: Ensure user 1000 owns everything in /app
+RUN chown -R user:user /app
+
+# Switch to non-root user
 USER user
 ENV HOME=/home/user \
     PATH=/home/user/.local/bin:$PATH
 
-# Expose Hugging Face default port
 EXPOSE 7860
 
-# Run Flask
 CMD ["python", "app.py"]

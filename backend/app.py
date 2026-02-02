@@ -24,7 +24,19 @@ def serve(path):
         return send_from_directory(app.static_folder, path)
     else:
         return send_from_directory(app.static_folder, 'index.html')
-MODEL_PATH = "../disease_severity_model.pth"
+
+# Robust Model Path Detection
+possible_paths = [
+    "disease_severity_model.pth", 
+    "../disease_severity_model.pth", 
+    "/app/disease_severity_model.pth"
+]
+MODEL_PATH = "../disease_severity_model.pth" # Default fallback
+for path in possible_paths:
+    if os.path.exists(path):
+        MODEL_PATH = path
+        print(f"Found model at: {MODEL_PATH}")
+        break
 
 # Configuration
 UPLOAD_FOLDER = 'uploads'
@@ -381,7 +393,7 @@ if __name__ == '__main__':
     
     try:
         # Initialize model on startup
-        model = get_model_instance('../disease_severity_model.pth')
+        model = get_model_instance(MODEL_PATH)
         print("Model loaded successfully!")
         print(f"Supported diseases: {', '.join(model.disease_classes)}")
     except Exception as e:
