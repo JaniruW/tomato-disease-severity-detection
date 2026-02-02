@@ -4,17 +4,20 @@ WORKDIR /app
 COPY package*.json ./
 # Increase memory for build
 ENV NODE_OPTIONS="--max-old-space-size=4096"
-RUN npm ci
+# Use install instead of ci for better cross-platform luck
+RUN npm install
 COPY . .
 RUN npm run build
 
 # Stage 2: Setup Python Backend
 FROM python:3.9-slim
 
-# Install system dependencies for OpenCV
+# Install system dependencies including build tools
 RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx \
     libglib2.0-0 \
+    gcc \
+    python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Create user with ID 1000 first
@@ -29,7 +32,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend code
 COPY backend/ .
 
-# Copy model (Handle potential LFS pointer vs real file)
+# Copy model
 COPY disease_severity_model.pth /app/disease_severity_model.pth
 
 # Copy frontend build from Stage 1
