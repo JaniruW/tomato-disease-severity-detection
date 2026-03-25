@@ -236,6 +236,7 @@ if __name__ == '__main__':
     print("  - GET  /api/diseases/<id> - Get disease info")
     print("  - GET  /api/health - Health check")
     
-    port = int(os.environ.get('PORT', 5000))
-    print(f"\nAPI Server running on http://0.0.0.0:{port}")
+    # For Hugging Face Spaces, the default port must be 7860
+    port = int(os.environ.get('PORT', 7860))
+    print(f"\nAPI Server starting on http://0.0.0.0:{port}")
     app.run(debug=False, host='0.0.0.0', port=port)
