@@ -81,7 +81,7 @@ npm run dev
 3. **Configure Environment:**
 Create `.env` file:
 ```env
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL=http://localhost:7860/api
 VITE_USE_MOCK_API=false
 ```
 
@@ -165,7 +165,7 @@ The application includes a comprehensive mock API for development and testing. T
 To connect to a real backend:
 
 1. Set `VITE_USE_MOCK_API=false` in your `.env` file
-2. Configure `VITE_API_URL` to point to your backend API
+2. Configure `VITE_API_URL` to point to your backend API (default: http://localhost:7860/api)
 3. Ensure your backend provides these endpoints:
    - `POST /api/analyze` - Upload and analyze image
    - `GET /api/history` - Fetch analysis history

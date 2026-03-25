@@ -31,46 +31,69 @@ export const generatePDFReport = async (analysisData) => {
     const cardWidth = (pageWidth - 2 * margin - 15) / 2;
     const cardHeight = 32;
 
-    // Disease Card
-    pdf.setFillColor(249, 250, 251);
-    pdf.roundedRect(margin, y, cardWidth, cardHeight, 3, 3, 'F');
-    pdf.setDrawColor(229, 231, 235);
-    pdf.roundedRect(margin, y, cardWidth, cardHeight, 3, 3, 'D');
+    if (disease.id === 'healthy') {
+        // Single Centered Card for Healthy Plants
+        const centeredWidth = pageWidth - 2 * margin;
+        pdf.setFillColor(249, 250, 251);
+        pdf.roundedRect(margin, y, centeredWidth, cardHeight, 3, 3, 'F');
+        pdf.setDrawColor(229, 231, 235);
+        pdf.roundedRect(margin, y, centeredWidth, cardHeight, 3, 3, 'D');
 
-    pdf.setFontSize(8);
-    pdf.setTextColor(107, 114, 128);
-    pdf.text('DETECTED DISEASE', margin + 8, y + 8);
+        pdf.setFontSize(8);
+        pdf.setTextColor(107, 114, 128);
+        pdf.text('STATUS', margin + 8, y + 8);
 
-    pdf.setFontSize(14);
-    pdf.setTextColor(17, 24, 39);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text(disease.name, margin + 8, y + 18);
+        pdf.setFontSize(14);
+        pdf.setTextColor(16, 185, 129); // Use primary green for "Healthy"
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(disease.name, margin + 8, y + 18);
 
-    pdf.setFontSize(9);
-    pdf.setTextColor(16, 185, 129);
-    pdf.text(`Confidence: ${confidence}%`, margin + 8, y + 26);
+        pdf.setFontSize(9);
+        pdf.setTextColor(107, 114, 128);
+        pdf.text(`Confidence: ${confidence}%`, margin + 8, y + 26);
+    } else {
+        // Two-Card Layout for Diseased Plants
+        // Disease Card
+        pdf.setFillColor(249, 250, 251);
+        pdf.roundedRect(margin, y, cardWidth, cardHeight, 3, 3, 'F');
+        pdf.setDrawColor(229, 231, 235);
+        pdf.roundedRect(margin, y, cardWidth, cardHeight, 3, 3, 'D');
 
-    // Severity Card
-    const severityX = margin + cardWidth + 15;
-    pdf.setFillColor(249, 250, 251);
-    pdf.roundedRect(severityX, y, cardWidth, cardHeight, 3, 3, 'F');
-    pdf.roundedRect(severityX, y, cardWidth, cardHeight, 3, 3, 'D');
+        pdf.setFontSize(8);
+        pdf.setTextColor(107, 114, 128);
+        pdf.text('DETECTED DISEASE', margin + 8, y + 8);
 
-    pdf.setFontSize(8);
-    pdf.setTextColor(107, 114, 128);
-    pdf.text('SEVERITY ASSESSMENT', severityX + 8, y + 8);
+        pdf.setFontSize(14);
+        pdf.setTextColor(17, 24, 39);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(disease.name, margin + 8, y + 18);
 
-    pdf.setFontSize(14);
-    const sevColor = severity.color || '#f59e0b';
-    const r = parseInt(sevColor.slice(1, 3), 16);
-    const g = parseInt(sevColor.slice(3, 5), 16);
-    const b = parseInt(sevColor.slice(5, 7), 16);
-    pdf.setTextColor(r, g, b);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text(severity.label, severityX + 8, y + 18);
+        pdf.setFontSize(9);
+        pdf.setTextColor(16, 185, 129);
+        pdf.text(`Confidence: ${confidence}%`, margin + 8, y + 26);
 
-    pdf.setFontSize(9);
-    pdf.text(`Affected Area: ${severity.percentage}%`, severityX + 8, y + 26);
+        // Severity Card
+        const severityX = margin + cardWidth + 15;
+        pdf.setFillColor(249, 250, 251);
+        pdf.roundedRect(severityX, y, cardWidth, cardHeight, 3, 3, 'F');
+        pdf.roundedRect(severityX, y, cardWidth, cardHeight, 3, 3, 'D');
+
+        pdf.setFontSize(8);
+        pdf.setTextColor(107, 114, 128);
+        pdf.text('SEVERITY ASSESSMENT', severityX + 8, y + 8);
+
+        pdf.setFontSize(14);
+        const sevColor = severity.color || '#f59e0b';
+        const r = parseInt(sevColor.slice(1, 3), 16);
+        const g = parseInt(sevColor.slice(3, 5), 16);
+        const b = parseInt(sevColor.slice(5, 7), 16);
+        pdf.setTextColor(r, g, b);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(severity.label, severityX + 8, y + 18);
+
+        pdf.setFontSize(9);
+        pdf.text(`Affected Area: ${severity.percentage}%`, severityX + 8, y + 26);
+    }
 
     y += cardHeight + 12;
 

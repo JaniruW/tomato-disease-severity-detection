@@ -75,13 +75,13 @@ You should see:
 Starting Plant Disease Detection API...
 Loading model...
 Model loaded successfully!
-API Server running on http://localhost:5000
+API Server running on http://localhost:7860
 ```
 
 **Test the API:**
 Open another terminal and run:
 ```bash
-curl http://localhost:5000/api/health
+curl http://localhost:7860/api/health
 ```
 
 You should get: `{"status":"healthy","message":"Plant Disease Detection API is running"}`
@@ -105,7 +105,7 @@ cp .env.example .env
 
 Edit `.env` and set:
 ```env
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL=http://localhost:7860/api
 VITE_USE_MOCK_API=false
 ```
 
@@ -166,13 +166,13 @@ pip install -r requirements.txt
 3. Verify model was saved correctly during training
 
 **Problem:** `CORS error in browser console`
-**Solution:** Backend has CORS enabled. Make sure backend is running on port 5000.
+**Solution:** Backend has CORS enabled. Make sure backend is running on port 7860.
 
 ### Frontend Issues
 
 **Problem:** `Network Error` or `Failed to fetch`
 **Solution:**
-1. Check backend is running: `http://localhost:5000/api/health`
+1. Check backend is running: `http://localhost:7860/api/health`
 2. Verify `.env` file has correct API URL
 3. Restart frontend dev server after changing `.env`
 

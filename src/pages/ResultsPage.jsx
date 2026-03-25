@@ -129,7 +129,7 @@ class ResultsPageClass extends Component {
                     <div ref={this.contentRef} className="space-y-8">
 
                         {/* CORE RESULTS SECTION */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className={`grid grid-cols-1 ${disease.id === 'healthy' ? 'max-w-2xl mx-auto w-full' : 'lg:grid-cols-2'} gap-8`}>
                             {/* Disease Info Card */}
                             <div className="h-full">
                                 <DiseaseCard
@@ -138,12 +138,14 @@ class ResultsPageClass extends Component {
                                 />
                             </div>
 
-                            {/* Severity Info Card */}
-                            <div className="h-full">
-                                <SeverityCard
-                                    severity={severity}
-                                />
-                            </div>
+                            {/* Severity Info Card - Hidden for healthy plants */}
+                            {disease.id !== 'healthy' && (
+                                <div className="h-full">
+                                    <SeverityCard
+                                        severity={severity}
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         {/* ACTION BUTTONS SECTION */}
@@ -160,17 +162,19 @@ class ResultsPageClass extends Component {
                                 </div>
                             </Button>
 
-                            <Button
-                                variant={showRecommendations ? "primary" : "outline"}
-                                onClick={this.toggleRecommendations}
-                                className="min-w-[200px] justify-center"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <ClipboardList size={18} />
-                                    <span>{showRecommendations ? "Hide" : "View"} Recommendations</span>
-                                    {showRecommendations ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-                                </div>
-                            </Button>
+                            {disease.id !== 'healthy' && (
+                                <Button
+                                    variant={showRecommendations ? "primary" : "outline"}
+                                    onClick={this.toggleRecommendations}
+                                    className="min-w-[200px] justify-center"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <ClipboardList size={18} />
+                                        <span>{showRecommendations ? "Hide" : "View"} Recommendations</span>
+                                        {showRecommendations ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
+                                    </div>
+                                </Button>
+                            )}
                         </div>
 
                         {/* EXPANDABLE SECTIONS */}
