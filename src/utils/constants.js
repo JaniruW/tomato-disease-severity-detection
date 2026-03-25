@@ -3,86 +3,107 @@ export const DISEASES = {
     'early_blight': {
         id: 'early_blight',
         name: 'Early Blight',
-        description: 'Early blight is a common fungal disease caused by Alternaria solani. It affects leaves, stems, and fruits, causing dark brown spots with concentric rings.',
+        description: 'Early blight, caused by Alternaria fungus, is the most common type of leaf spot disease on tomatoes. It is more prevalent in hot, humid regions and remains in the soil for one year.',
         symptoms: [
-            'Dark brown spots with concentric rings on older leaves',
-            'Yellowing around the spots',
-            'Leaf drop in severe cases',
-            'Stem lesions near soil line'
+            'Dark brown spots encircled with rings starting on lowest leaves',
+            'Foliage shrivels, dries up, and falls off',
+            'Lesions develop on stems and fruits',
+            'Defoliation leading to sunscald'
         ],
-        causes: [
-            'Warm, humid weather',
-            'Poor air circulation',
-            'Overhead watering',
-            'Infected plant debris'
+        management: [
+            'Remove lower leaves, including up to a third of infected foliage',
+            'Apply tomato fungicide at first sign of infection',
+            'Do not compost affected plants'
+        ],
+        prevention: [
+            'Water at soil level and use mulch',
+            'Keep adequate space between plants and rows',
+            'Rotate tomato plants and other nightshades every two years',
+            'Use copper and/or sulfur sprays as a deterrent'
         ]
     },
     'late_blight': {
         id: 'late_blight',
         name: 'Late Blight',
-        description: 'Late blight is a devastating disease caused by Phytophthora infestans. It can destroy entire crops within days under favorable conditions.',
+        description: 'Late blight is a mold disease affecting tomato leaves, stems, and fruit. It develops in cool, wet weather and spreads rapidly.',
         symptoms: [
-            'Water-soaked spots on leaves',
-            'White fuzzy growth on leaf undersides',
-            'Brown lesions on stems',
-            'Rapid plant death'
+            'Greasy-looking, irregularly shaped dark brown blotches with green-gray edges',
+            'White mold rings around spots in wet weather',
+            'Spots eventually turn dry and papery',
+            'Blackened areas may appear on the stems',
+            'Fruit develops large, greasy gray spots'
         ],
-        causes: [
-            'Cool, wet weather',
-            'High humidity',
-            'Infected seed potatoes',
-            'Wind-dispersed spores'
+        management: [
+            'Apply copper sprays for some control',
+            'Use Serenade fungicide as a deterrent',
+            'Remove all debris and rotate crops'
+        ],
+        prevention: [
+            'Rotate crops each year',
+            'Plant blight-resistant varieties',
+            'Promote air circulation between plants',
+            'Prune leaves that touch'
         ]
     },
     'leaf_mold': {
         id: 'leaf_mold',
         name: 'Leaf Mold',
-        description: 'Leaf mold is caused by the fungus Passalora fulva. It primarily affects greenhouse tomatoes but can occur in field conditions.',
+        description: 'Leaf mold is a fungus caused by Passalora fulva and it occurs most frequently in humid conditions.',
         symptoms: [
-            'Pale green to yellow spots on upper leaf surface',
+            'Pale green or yellowish spots on the upper leaves',
             'Olive-green to brown velvety growth on lower surface',
-            'Leaf curling and wilting',
-            'Premature leaf drop'
+            'Leathery, blackish rot near the stem on fruits'
         ],
-        causes: [
-            'High humidity (above 85%)',
-            'Poor ventilation',
-            'Dense plant canopy',
-            'Overhead irrigation'
+        management: [
+            'Increase air circulation by pruning, spacing, and staking',
+            'Avoid watering overhead to keep leaves dry'
+        ],
+        prevention: [
+            'Implement strict crop rotation',
+            'Use preventive fungicides',
+            'Provide proper spacing'
         ]
     },
     'septoria_leaf_spot': {
         id: 'septoria_leaf_spot',
         name: 'Septoria Leaf Spot',
-        description: 'Septoria leaf spot is caused by Septoria lycopersici. It is one of the most destructive tomato diseases.',
+        description: 'The Septoria fungus causes septoria leaf spot, affecting leaves but not the fruit. This fungus thrives in warm, wet weather.',
         symptoms: [
-            'Small circular spots with dark borders',
-            'Gray centers with tiny black dots',
-            'Starts on lower leaves',
-            'Progressive defoliation'
+            'Multiple small, dark circles (1/8 to 1/4 inch diameter)',
+            'Spots develop a tan or gray center',
+            'Leaves eventually wilt and fall off',
+            'Spreads rapidly from older to new leaves'
         ],
-        causes: [
-            'Wet, humid conditions',
-            'Splashing water',
-            'Infected plant debris',
-            'Warm temperatures (60-80°F)'
+        management: [
+            'Repeated applications with a tomato fungicide or biofungicide',
+            'Use copper sprays or Serenade fungicide',
+            'Remove infected leaves immediately'
+        ],
+        prevention: [
+            'Maintain good garden sanitation',
+            'Clean tools before and after working with plants',
+            'Water at ground level',
+            'Rotate tomato crops every three years'
         ]
     },
     'bacterial_spot': {
         id: 'bacterial_spot',
         name: 'Bacterial Spot',
-        description: 'Bacterial spot is caused by Xanthomonas species. It affects leaves, stems, and fruits.',
+        description: 'Bacterial spot is a disease that affects tomatoes and peppers in particularly hot, humid conditions, resulting in spotty and pitted fruits.',
         symptoms: [
-            'Small, dark brown spots on leaves',
-            'Yellow halos around spots',
-            'Raised spots on fruits',
-            'Leaf drop and defoliation'
+            'Small brown spots with a yellow ring around them on leaves',
+            'Spots often fall away and leave holes behind',
+            'Fruits have scabby spots'
         ],
-        causes: [
-            'Warm, wet weather',
-            'Overhead irrigation',
-            'Contaminated seeds',
-            'Infected transplants'
+        management: [
+            'Do not eat infected tomatoes',
+            'Remove infected plants',
+            'Rotate crops'
+        ],
+        prevention: [
+            'Choose resistant varieties',
+            'Water in the morning to allow drying time',
+            'Space out plants properly'
         ]
     },
     'healthy': {
@@ -95,7 +116,8 @@ export const DISEASES = {
             'Strong stem structure',
             'Normal growth pattern'
         ],
-        causes: []
+        management: ['Continue regular maintenance'],
+        prevention: ['Monitor regularly for any changes']
     }
 };
 
@@ -131,103 +153,93 @@ export const SEVERITY_LEVELS = {
 export const RECOMMENDATIONS = {
     early_blight: {
         early: {
-            treatments: [
-                'Remove and destroy affected leaves',
-                'Apply copper-based fungicide',
-                'Improve air circulation by pruning',
-                'Mulch around plants to prevent soil splash'
-            ],
-            preventive: [
-                'Water at soil level, avoid wetting foliage',
-                'Space plants properly for air circulation',
-                'Rotate crops annually',
-                'Use disease-resistant varieties'
-            ],
+            treatments: DISEASES.early_blight.management,
+            preventive: DISEASES.early_blight.prevention,
             priority: 'medium'
         },
         mid: {
-            treatments: [
-                'Apply fungicide every 7-10 days',
-                'Remove severely infected leaves',
-                'Increase plant spacing if possible',
-                'Apply organic fungicides (neem oil, copper)'
-            ],
-            preventive: [
-                'Monitor plants daily',
-                'Avoid overhead watering',
-                'Remove plant debris regularly',
-                'Apply preventive fungicide sprays'
-            ],
+            treatments: DISEASES.early_blight.management,
+            preventive: DISEASES.early_blight.prevention,
             priority: 'high'
         },
         late: {
-            treatments: [
-                'Consider removing severely infected plants',
-                'Intensive fungicide treatment',
-                'Improve drainage and air circulation',
-                'Harvest remaining healthy fruits'
-            ],
-            preventive: [
-                'Destroy infected plant material',
-                'Sanitize tools and equipment',
-                'Plan crop rotation for next season',
-                'Test soil and amend as needed'
-            ],
+            treatments: DISEASES.early_blight.management,
+            preventive: DISEASES.early_blight.prevention,
             priority: 'critical'
         }
     },
     late_blight: {
         early: {
-            treatments: [
-                'Apply systemic fungicide immediately',
-                'Remove infected plant parts',
-                'Improve drainage',
-                'Reduce humidity around plants'
-            ],
-            preventive: [
-                'Monitor weather conditions',
-                'Use resistant varieties',
-                'Ensure good air circulation',
-                'Avoid overhead irrigation'
-            ],
+            treatments: DISEASES.late_blight.management,
+            preventive: DISEASES.late_blight.prevention,
             priority: 'high'
         },
         mid: {
-            treatments: [
-                'Aggressive fungicide application',
-                'Remove heavily infected plants',
-                'Protect neighboring plants',
-                'Apply copper-based fungicides'
-            ],
-            preventive: [
-                'Isolate infected area',
-                'Destroy infected material properly',
-                'Disinfect tools after each use',
-                'Monitor spread to other plants'
-            ],
+            treatments: DISEASES.late_blight.management,
+            preventive: DISEASES.late_blight.prevention,
             priority: 'critical'
         },
         late: {
-            treatments: [
-                'Remove and destroy all infected plants',
-                'Do not compost infected material',
-                'Treat surrounding soil',
-                'Consider crop rotation'
-            ],
-            preventive: [
-                'Clean up all plant debris',
-                'Sanitize growing area',
-                'Plan for resistant varieties next season',
-                'Improve field drainage'
-            ],
+            treatments: DISEASES.late_blight.management,
+            preventive: DISEASES.late_blight.prevention,
             priority: 'critical'
         }
     },
-    // Add similar structures for other diseases
+    septoria_leaf_spot: {
+        early: {
+            treatments: DISEASES.septoria_leaf_spot.management,
+            preventive: DISEASES.septoria_leaf_spot.prevention,
+            priority: 'medium'
+        },
+        mid: {
+            treatments: DISEASES.septoria_leaf_spot.management,
+            preventive: DISEASES.septoria_leaf_spot.prevention,
+            priority: 'high'
+        },
+        late: {
+            treatments: DISEASES.septoria_leaf_spot.management,
+            preventive: DISEASES.septoria_leaf_spot.prevention,
+            priority: 'critical'
+        }
+    },
+    leaf_mold: {
+        early: {
+            treatments: DISEASES.leaf_mold.management,
+            preventive: DISEASES.leaf_mold.prevention,
+            priority: 'medium'
+        },
+        mid: {
+            treatments: DISEASES.leaf_mold.management,
+            preventive: DISEASES.leaf_mold.prevention,
+            priority: 'high'
+        },
+        late: {
+            treatments: DISEASES.leaf_mold.management,
+            preventive: DISEASES.leaf_mold.prevention,
+            priority: 'critical'
+        }
+    },
+    bacterial_spot: {
+        early: {
+            treatments: DISEASES.bacterial_spot.management,
+            preventive: DISEASES.bacterial_spot.prevention,
+            priority: 'medium'
+        },
+        mid: {
+            treatments: DISEASES.bacterial_spot.management,
+            preventive: DISEASES.bacterial_spot.prevention,
+            priority: 'high'
+        },
+        late: {
+            treatments: DISEASES.bacterial_spot.management,
+            preventive: DISEASES.bacterial_spot.prevention,
+            priority: 'critical'
+        }
+    },
     healthy: {
         early: {
-            treatments: ['Continue regular care', 'Monitor for any changes'],
-            preventive: ['Maintain good cultural practices', 'Regular inspection'],
+            treatments: DISEASES.healthy.management,
+            preventive: DISEASES.healthy.prevention,
             priority: 'low'
         }
     }

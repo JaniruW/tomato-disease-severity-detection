@@ -1,59 +1,80 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { Component, createContext } from 'react';
 
 const AnalysisContext = createContext();
 
-export const useAnalysis = () => {
-    const context = useContext(AnalysisContext);
+/**
+ * AnalysisProvider - Class-based Context Provider for OOP Architecture
+ */
+class AnalysisProvider extends Component {
+    constructor(props) {
+        super(props);
+
+        // Initialize state
+        this.state = {
+            currentAnalysis: null,
+            isAnalyzing: false
+        };
+
+        // Bind methods
+        this.saveAnalysis = this.saveAnalysis.bind(this);
+        this.clearCurrentAnalysis = this.clearCurrentAnalysis.bind(this);
+        this.setIsAnalyzing = this.setIsAnalyzing.bind(this);
+    }
+
+    /**
+     * Save analysis results
+     * @param {Object} analysis - Analysis data from backend
+     */
+    saveAnalysis(analysis) {
+        this.setState({ currentAnalysis: analysis });
+    }
+
+    /**
+     * Clear current analysis
+     */
+    clearCurrentAnalysis() {
+        this.setState({ currentAnalysis: null });
+    }
+
+
+    /**
+     * Set analyzing state
+     * @param {boolean} isAnalyzing - Whether analysis is in progress
+     */
+    setIsAnalyzing(isAnalyzing) {
+        this.setState({ isAnalyzing });
+    }
+
+    render() {
+        const { children } = this.props;
+        const { currentAnalysis, isAnalyzing } = this.state;
+
+        const contextValue = {
+            currentAnalysis,
+            isAnalyzing,
+            setIsAnalyzing: this.setIsAnalyzing,
+            saveAnalysis: this.saveAnalysis,
+            clearCurrentAnalysis: this.clearCurrentAnalysis
+        };
+
+        return (
+            <AnalysisContext.Provider value={contextValue}>
+                {children}
+            </AnalysisContext.Provider>
+        );
+    }
+}
+
+/**
+ * Custom hook for consuming AnalysisContext
+ */
+const useAnalysis = () => {
+    const context = React.useContext(AnalysisContext);
     if (!context) {
         throw new Error('useAnalysis must be used within AnalysisProvider');
     }
     return context;
 };
 
-export const AnalysisProvider = ({ children }) => {
-    const [currentAnalysis, setCurrentAnalysis] = useState(null);
-    const [analysisHistory, setAnalysisHistory] = useState([]);
-    const [isAnalyzing, setIsAnalyzing] = useState(false);
-
-    const saveAnalysis = (analysis) => {
-        setCurrentAnalysis(analysis);
-
-        // Add to history
-        const historyItem = {
-            id: Date.now().toString(),
-            date: analysis.timestamp,
-            disease: analysis.disease.name,
-            severity: analysis.severity.label,
-            severityPercentage: analysis.severity.percentage,
-            confidence: analysis.confidence,
-            thumbnail: analysis.imageUrl,
-            fullData: analysis
-        };
-
-        setAnalysisHistory(prev => [historyItem, ...prev]);
-    };
-
-    const clearCurrentAnalysis = () => {
-        setCurrentAnalysis(null);
-    };
-
-    const deleteHistoryItem = (id) => {
-        setAnalysisHistory(prev => prev.filter(item => item.id !== id));
-    };
-
-    const value = {
-        currentAnalysis,
-        analysisHistory,
-        isAnalyzing,
-        setIsAnalyzing,
-        saveAnalysis,
-        clearCurrentAnalysis,
-        deleteHistoryItem
-    };
-
-    return (
-        <AnalysisContext.Provider value={value}>
-            {children}
-        </AnalysisContext.Provider>
-    );
-};
+export { AnalysisProvider, useAnalysis };
+export default AnalysisContext;

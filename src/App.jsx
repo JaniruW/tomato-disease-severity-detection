@@ -4,7 +4,6 @@ import { AnalysisProvider } from './context/AnalysisContext';
 import LandingPage from './pages/LandingPage';
 import UploadPage from './pages/UploadPage';
 import ResultsPage from './pages/ResultsPage';
-import HistoryPage from './pages/HistoryPage';
 
 function App() {
   return (
@@ -14,7 +13,6 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/results" element={<ResultsPage />} />
-          <Route path="/history" element={<HistoryPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>

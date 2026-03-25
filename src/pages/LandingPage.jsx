@@ -20,7 +20,7 @@ const LandingPage = () => {
         {
             icon: <Sparkles className="w-8 h-8" />,
             title: 'Explainable AI',
-            description: 'Grad-CAM visualization shows exactly which parts of the leaf influenced the AI\'s decision.'
+            description: 'Grad-CAM ++  visualization shows exactly which parts of the leaf influenced the AI\'s decision.'
         },
         {
             icon: <Shield className="w-8 h-8" />,

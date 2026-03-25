@@ -6,13 +6,14 @@ import os
 from datetime import datetime
 import traceback
 from model import get_model_instance
-from gradcam import GradCAM
+from gradcam import GradCAMPlusPlus
 import cv2
 import numpy as np
 import base64
 import torch
 from PIL import Image
 import io
+from constants import DISEASES, SEVERITY_LEVELS
 
 app = Flask(__name__, static_folder='dist', static_url_path='/')
 CORS(app)  # Enable CORS
@@ -45,132 +46,13 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Disease information database
-DISEASE_INFO = {
-    'early_blight': {
-        'id': 'early_blight',
-        'name': 'Early Blight',
-        'description': 'Early blight is a common fungal disease caused by Alternaria solani. It affects leaves, stems, and fruits, causing dark brown spots with concentric rings.',
-        'symptoms': [
-            'Dark brown spots with concentric rings on older leaves',
-            'Yellowing around the spots',
-            'Leaf drop in severe cases',
-            'Stem lesions near soil line'
-        ],
-        'causes': [
-            'Warm, humid weather',
-            'Poor air circulation',
-            'Overhead watering',
-            'Infected plant debris'
-        ]
-    },
-    'late_blight': {
-        'id': 'late_blight',
-        'name': 'Late Blight',
-        'description': 'Late blight is a devastating disease caused by Phytophthora infestans. It can destroy entire crops within days under favorable conditions.',
-        'symptoms': [
-            'Water-soaked spots on leaves',
-            'White fuzzy growth on leaf undersides',
-            'Brown lesions on stems',
-            'Rapid plant death'
-        ],
-        'causes': [
-            'Cool, wet weather',
-            'High humidity',
-            'Infected seed potatoes',
-            'Wind-dispersed spores'
-        ]
-    },
-    'leaf_mold': {
-        'id': 'leaf_mold',
-        'name': 'Leaf Mold',
-        'description': 'Leaf mold is caused by the fungus Passalora fulva. It primarily affects greenhouse tomatoes.',
-        'symptoms': [
-            'Pale green to yellow spots on upper leaf surface',
-            'Olive-green to brown velvety growth on lower surface',
-            'Leaf curling and wilting',
-            'Premature leaf drop'
-        ],
-        'causes': [
-            'High humidity (above 85%)',
-            'Poor ventilation',
-            'Dense plant canopy',
-            'Overhead irrigation'
-        ]
-    },
-    'septoria_leaf_spot': {
-        'id': 'septoria_leaf_spot',
-        'name': 'Septoria Leaf Spot',
-        'description': 'Septoria leaf spot is caused by Septoria lycopersici. It is one of the most destructive tomato diseases.',
-        'symptoms': [
-            'Small circular spots with dark borders',
-            'Gray centers with tiny black dots',
-            'Starts on lower leaves',
-            'Progressive defoliation'
-        ],
-        'causes': [
-            'Wet, humid conditions',
-            'Splashing water',
-            'Infected plant debris',
-            'Warm temperatures (60-80°F)'
-        ]
-    },
-    'bacterial_spot': {
-        'id': 'bacterial_spot',
-        'name': 'Bacterial Spot',
-        'description': 'Bacterial spot is caused by Xanthomonas species. It affects leaves, stems, and fruits.',
-        'symptoms': [
-            'Small, dark brown spots on leaves',
-            'Yellow halos around spots',
-            'Raised spots on fruits',
-            'Leaf drop and defoliation'
-        ],
-        'causes': [
-            'Warm, wet weather',
-            'Overhead irrigation',
-            'Contaminated seeds',
-            'Infected transplants'
-        ]
-    },
-    'healthy': {
-        'id': 'healthy',
-        'name': 'Healthy Plant',
-        'description': 'The plant appears healthy with no visible signs of disease.',
-        'symptoms': [
-            'Vibrant green leaves',
-            'No discoloration or spots',
-            'Strong stem structure',
-            'Normal growth pattern'
-        ],
-        'causes': []
-    }
-}
-
 def allowed_file(filename):
     """Check if file extension is allowed"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def get_severity_info(level, percentage):
-    """Get severity information"""
-    severity_config = {
-        'EARLY': {
-            'label': 'Early Stage',
-            'color': '#10b981',
-            'icon': '🟢'
-        },
-        'MID': {
-            'label': 'Mid Stage',
-            'color': '#f59e0b',
-            'icon': '🟡'
-        },
-        'LATE': {
-            'label': 'Late Stage',
-            'color': '#ef4444',
-            'icon': '🔴'
-        }
-    }
-    
-    config = severity_config.get(level, severity_config['MID'])
+    """Get severity information from constants"""
+    config = SEVERITY_LEVELS.get(level, SEVERITY_LEVELS['MID'])
     return {
         'label': config['label'],
         'percentage': percentage,
@@ -191,9 +73,6 @@ def health_check():
 def analyze_image():
     """
     Analyze uploaded image for disease detection
-    
-    Expected: multipart/form-data with 'image' file
-    Returns: JSON with disease prediction and severity + Grad-CAM XAI
     """
     try:
         # Check if image is in request
@@ -232,12 +111,12 @@ def analyze_image():
         # Get model instance
         model = get_model_instance(MODEL_PATH)
         
-        # ===== PERFORM PREDICTION =====
+        
         prediction = model.predict(image_bytes)
         
         # Get disease information
         disease_id = prediction['disease_id']
-        disease_info = DISEASE_INFO.get(disease_id, DISEASE_INFO['healthy'])
+        disease_info = DISEASES.get(disease_id, DISEASES['healthy'])
         
         # Get severity information
         severity_info = get_severity_info(
@@ -245,18 +124,17 @@ def analyze_image():
             prediction['severity_percentage']
         )
         
-        # ===== GENERATE GRAD-CAM XAI =====
+        # genarate grad-cam++ XAI
         # Reopen image for processing
         image = Image.open(io.BytesIO(image_bytes)).convert('RGB')
         
         # Preprocess image (same as in model)
         x = model.transform(image).unsqueeze(0).to(model.device)
-        
         # Get target layer for Grad-CAM
         target_layer = model.get_target_layer()
         
-        # Initialize Grad-CAM
-        gradcam = GradCAM(model.model, target_layer)
+        # Initialize Grad-CAM++
+        gradcam = GradCAMPlusPlus(model.model, target_layer)
         
         # Generate CAM heatmap
         # Get predicted class index
@@ -264,26 +142,27 @@ def analyze_image():
             disease_logits, _ = model.model(x)
             predicted_class_idx = disease_logits.argmax(dim=1).item()
         
-        # Generate Grad-CAM (requires gradients, so no torch.no_grad())
-        cam = gradcam.generate(x, target_class=predicted_class_idx)
+        # Generate Grad-CAM++
+        cam = gradcam.generate(x, predicted_class_idx)
         
-        # Resize image to 224x224 for overlay (same as model input)
-        img_resized = image.resize((224, 224))
-        img_array = np.array(img_resized)
+        # Generate Visuals 
+        visuals = gradcam.generate_visuals(image, cam, threshold_pct=60)
         
-        # Generate overlay
-        overlay = gradcam.apply_overlay(img_array, cam, alpha=0.4)
-        
+        # Clean up hooks
+        gradcam.remove()
+
         # Convert to base64 for JSON response
         def image_to_base64(img_bgr):
             """Convert BGR numpy array to base64 string"""
             _, buffer = cv2.imencode('.jpg', img_bgr)
             return base64.b64encode(buffer).decode('utf-8')
         
-        # Generate heatmap visualization
-        heatmap_colored = cv2.applyColorMap(np.uint8(255 * cam), cv2.COLORMAP_JET)
-        heatmap_resized = cv2.resize(heatmap_colored, (224, 224))
-        
+        # Prepare visuals for response
+        overlay_bgr = cv2.cvtColor((visuals['overlay'] * 255).astype(np.uint8), cv2.COLOR_RGB2BGR)
+        contour_bgr = cv2.cvtColor((visuals['overlay_contour'] * 255).astype(np.uint8), cv2.COLOR_RGB2BGR)
+        heatmap_bgr = cv2.cvtColor((visuals['heatmap'] * 255).astype(np.uint8), cv2.COLOR_RGB2BGR)
+        original_bgr = cv2.cvtColor(np.array(image.convert('RGB').resize((224, 224))), cv2.COLOR_RGB2BGR)
+
         # Prepare response
         response = {
             'success': True,
@@ -292,12 +171,12 @@ def analyze_image():
                 'confidence': prediction['confidence'],
                 'severity': severity_info,
                 'gradcam': {
-                    'original': image_to_base64(cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)),
-                    'heatmap': image_to_base64(heatmap_resized),
-                    'overlay': image_to_base64(cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR))
+                    'original': image_to_base64(original_bgr),
+                    'heatmap': image_to_base64(heatmap_bgr),
+                    'overlay': image_to_base64(overlay_bgr),
+                    'contour': image_to_base64(contour_bgr)
                 },
-                'timestamp': datetime.now().isoformat(),
-                'imageUrl': None  # Frontend will use the uploaded image
+                'timestamp': prediction.get('timestamp', datetime.now().isoformat())
             }
         }
         
@@ -315,7 +194,7 @@ def analyze_image():
 @app.route('/api/diseases/<disease_id>', methods=['GET'])
 def get_disease_info(disease_id):
     """Get information about a specific disease"""
-    disease_info = DISEASE_INFO.get(disease_id)
+    disease_info = DISEASES.get(disease_id)
     
     if disease_info:
         return jsonify({
@@ -333,57 +212,8 @@ def get_all_diseases():
     """Get information about all diseases"""
     return jsonify({
         'success': True,
-        'data': list(DISEASE_INFO.values())
+        'data': list(DISEASES.values())
     })
-
-# In-memory history storage (replace with database in production)
-history_storage = []
-
-@app.route('/api/history', methods=['GET'])
-def get_history():
-    """Get analysis history"""
-    return jsonify({
-        'success': True,
-        'data': sorted(history_storage, key=lambda x: x['date'], reverse=True)
-    })
-
-@app.route('/api/history', methods=['POST'])
-def save_history():
-    """Save analysis to history"""
-    try:
-        data = request.json
-        if not data:
-            return jsonify({'success': False, 'error': 'No data provided'}), 400
-            
-        # Add ID if not present
-        if 'id' not in data:
-            data['id'] = str(len(history_storage) + 1)
-            
-        # Ensure date format
-        if 'date' not in data:
-            data['date'] = datetime.now().isoformat()
-            
-        history_storage.append(data)
-        
-        return jsonify({
-            'success': True,
-            'data': data,
-            'message': 'Analysis saved to history'
-        })
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/history/<id>', methods=['DELETE'])
-def delete_history_item(id):
-    """Delete history item"""
-    global history_storage
-    initial_len = len(history_storage)
-    history_storage = [item for item in history_storage if str(item.get('id')) != str(id)]
-    
-    if len(history_storage) < initial_len:
-        return jsonify({'success': True, 'message': 'Item deleted'})
-    else:
-        return jsonify({'success': False, 'error': 'Item not found'}), 404
 
 
 if __name__ == '__main__':
@@ -406,6 +236,6 @@ if __name__ == '__main__':
     print("  - GET  /api/diseases/<id> - Get disease info")
     print("  - GET  /api/health - Health check")
     
-    port = int(os.environ.get('PORT', 7860))
+    port = int(os.environ.get('PORT', 5000))
     print(f"\nAPI Server running on http://0.0.0.0:{port}")
     app.run(debug=False, host='0.0.0.0', port=port)

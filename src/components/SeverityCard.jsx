@@ -131,16 +131,6 @@ const SeverityCard = ({ severity }) => {
                     </div>
                 </div>
 
-                {/* Urgency Indicator */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                    <span className="text-sm font-medium text-gray-700">Action Priority:</span>
-                    <Badge
-                        variant={level === 'LATE' ? 'danger' : level === 'MID' ? 'warning' : 'success'}
-                        size="md"
-                    >
-                        {level === 'LATE' ? 'CRITICAL' : level === 'MID' ? 'HIGH' : 'MEDIUM'}
-                    </Badge>
-                </div>
             </div>
         </Card>
     );

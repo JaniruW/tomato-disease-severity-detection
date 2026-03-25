@@ -36,54 +36,6 @@ export const mockAnalysisResult = {
     imageUrl: '/sample-leaf.jpg'
 };
 
-// Sample history data
-export const mockHistory = [
-    {
-        id: '1',
-        date: '2026-01-15T10:30:00',
-        disease: 'Early Blight',
-        severity: 'Mid Stage',
-        severityPercentage: 45,
-        confidence: 92.5,
-        thumbnail: '/sample-leaf.jpg'
-    },
-    {
-        id: '2',
-        date: '2026-01-14T15:20:00',
-        disease: 'Late Blight',
-        severity: 'Early Stage',
-        severityPercentage: 25,
-        confidence: 88.3,
-        thumbnail: '/sample-leaf-2.jpg'
-    },
-    {
-        id: '3',
-        date: '2026-01-13T09:15:00',
-        disease: 'Healthy',
-        severity: 'N/A',
-        severityPercentage: 0,
-        confidence: 95.7,
-        thumbnail: '/sample-leaf-3.jpg'
-    },
-    {
-        id: '4',
-        date: '2026-01-12T14:45:00',
-        disease: 'Septoria Leaf Spot',
-        severity: 'Late Stage',
-        severityPercentage: 78,
-        confidence: 90.2,
-        thumbnail: '/sample-leaf-4.jpg'
-    },
-    {
-        id: '5',
-        date: '2026-01-11T11:00:00',
-        disease: 'Bacterial Spot',
-        severity: 'Mid Stage',
-        severityPercentage: 52,
-        confidence: 87.9,
-        thumbnail: '/sample-leaf-5.jpg'
-    }
-];
 
 // Mock API delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -166,16 +118,6 @@ export const mockAPI = {
         };
     },
 
-    /**
-     * Get analysis history
-     */
-    getHistory: async () => {
-        await delay(500);
-        return {
-            success: true,
-            data: mockHistory
-        };
-    },
 
     /**
      * Get disease information
@@ -201,16 +143,6 @@ export const mockAPI = {
         };
     },
 
-    /**
-     * Save analysis to history
-     */
-    saveToHistory: async (analysisData) => {
-        await delay(500);
-        return {
-            success: true,
-            message: 'Analysis saved to history'
-        };
-    }
 };
 
 export default mockAPI;

@@ -4,10 +4,21 @@ import Card from './ui/Card';
 import Badge from './ui/Badge';
 import { getRecommendations } from '../utils/constants';
 
-const RecommendationPanel = ({ disease, severity }) => {
-    if (!disease || !severity) return null;
+const RecommendationPanel = ({ disease, severity, diseaseId, severityLevel }) => {
 
-    const recommendations = getRecommendations(disease.id, severity.level.toLowerCase());
+    const effectiveDisease = disease || { id: diseaseId, name: 'Disease' };
+    const effectiveSeverity = severity || { level: severityLevel || 'mid', label: 'Average Stage' };
+
+    if (!effectiveDisease.id) return null;
+
+    // Get recommendations 
+    const staticRecs = getRecommendations(effectiveDisease.id, (effectiveSeverity.level || 'mid').toLowerCase());
+
+    const recommendations = {
+        treatments: effectiveDisease.management || staticRecs.treatments,
+        preventive: effectiveDisease.prevention || staticRecs.preventive,
+        priority: staticRecs.priority
+    };
 
     const getPriorityColor = (priority) => {
         switch (priority) {
@@ -40,19 +51,6 @@ const RecommendationPanel = ({ disease, severity }) => {
             hover
         >
             <div className="space-y-6">
-                {/* Priority Badge */}
-                <div className="flex items-center justify-between pb-4 border-b border-gray-200">
-                    <div className="flex items-center space-x-2">
-                        {getPriorityIcon(recommendations.priority)}
-                        <span className="text-sm font-medium text-gray-700">Action Priority:</span>
-                    </div>
-                    <Badge
-                        variant={getPriorityColor(recommendations.priority)}
-                        size="md"
-                    >
-                        {recommendations.priority.toUpperCase()}
-                    </Badge>
-                </div>
 
                 {/* Immediate Treatments */}
                 {recommendations.treatments && recommendations.treatments.length > 0 && (

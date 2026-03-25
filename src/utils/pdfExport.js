@@ -1,141 +1,156 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-/**
- * Generate PDF report from analysis results
- */
+
 export const generatePDFReport = async (analysisData) => {
-    const { disease, severity, confidence, image, timestamp, recommendations } = analysisData;
+    const { disease, severity, confidence, timestamp } = analysisData;
 
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    let yPosition = 20;
+    const margin = 20;
+    let y = 0;
 
-    // Title
-    pdf.setFontSize(24);
-    pdf.setTextColor(34, 139, 34);
-    pdf.text('Plant Disease Analysis Report', pageWidth / 2, yPosition, { align: 'center' });
+    // ----- HEADER BANNER -----
+    pdf.setFillColor(16, 185, 129); // Primary green
+    pdf.rect(0, 0, pageWidth, 40, 'F');
 
-    yPosition += 15;
+    pdf.setFontSize(22);
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('DISEASE ANALYSIS REPORT', pageWidth / 2, 20, { align: 'center' });
 
-    // Date
-    pdf.setFontSize(10);
-    pdf.setTextColor(100, 100, 100);
-    pdf.text(`Generated on: ${new Date(timestamp).toLocaleString()}`, pageWidth / 2, yPosition, { align: 'center' });
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`REPORT ID: ${Date.now()}`, pageWidth / 2, 28, { align: 'center' });
+    pdf.text(`GENERATED: ${new Date(timestamp).toLocaleString()}`, pageWidth / 2, 33, { align: 'center' });
 
-    yPosition += 15;
+    y = 52;
 
-    // Disease Information
-    pdf.setFontSize(16);
-    pdf.setTextColor(0, 0, 0);
-    pdf.text('Disease Detection', 20, yPosition);
+    // ----- SUMMARY DASHBOARD -----
+    const cardWidth = (pageWidth - 2 * margin - 15) / 2;
+    const cardHeight = 32;
 
-    yPosition += 10;
-    pdf.setFontSize(12);
-    pdf.text(`Disease: ${disease.name}`, 20, yPosition);
+    // Disease Card
+    pdf.setFillColor(249, 250, 251);
+    pdf.roundedRect(margin, y, cardWidth, cardHeight, 3, 3, 'F');
+    pdf.setDrawColor(229, 231, 235);
+    pdf.roundedRect(margin, y, cardWidth, cardHeight, 3, 3, 'D');
 
-    yPosition += 7;
-    pdf.text(`Confidence: ${confidence}%`, 20, yPosition);
+    pdf.setFontSize(8);
+    pdf.setTextColor(107, 114, 128);
+    pdf.text('DETECTED DISEASE', margin + 8, y + 8);
 
-    yPosition += 7;
-    pdf.text(`Severity: ${severity.label} (${severity.percentage}%)`, 20, yPosition);
-
-    yPosition += 12;
-
-    // Disease Description
     pdf.setFontSize(14);
-    pdf.text('Description', 20, yPosition);
+    pdf.setTextColor(17, 24, 39);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(disease.name, margin + 8, y + 18);
 
-    yPosition += 8;
-    pdf.setFontSize(10);
-    const descriptionLines = pdf.splitTextToSize(disease.description, pageWidth - 40);
-    pdf.text(descriptionLines, 20, yPosition);
+    pdf.setFontSize(9);
+    pdf.setTextColor(16, 185, 129);
+    pdf.text(`Confidence: ${confidence}%`, margin + 8, y + 26);
 
-    yPosition += descriptionLines.length * 5 + 10;
+    // Severity Card
+    const severityX = margin + cardWidth + 15;
+    pdf.setFillColor(249, 250, 251);
+    pdf.roundedRect(severityX, y, cardWidth, cardHeight, 3, 3, 'F');
+    pdf.roundedRect(severityX, y, cardWidth, cardHeight, 3, 3, 'D');
 
-    // Symptoms
-    if (disease.symptoms && disease.symptoms.length > 0) {
-        pdf.setFontSize(14);
-        pdf.text('Symptoms', 20, yPosition);
+    pdf.setFontSize(8);
+    pdf.setTextColor(107, 114, 128);
+    pdf.text('SEVERITY ASSESSMENT', severityX + 8, y + 8);
 
-        yPosition += 8;
+    pdf.setFontSize(14);
+    const sevColor = severity.color || '#f59e0b';
+    const r = parseInt(sevColor.slice(1, 3), 16);
+    const g = parseInt(sevColor.slice(3, 5), 16);
+    const b = parseInt(sevColor.slice(5, 7), 16);
+    pdf.setTextColor(r, g, b);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(severity.label, severityX + 8, y + 18);
+
+    pdf.setFontSize(9);
+    pdf.text(`Affected Area: ${severity.percentage}%`, severityX + 8, y + 26);
+
+    y += cardHeight + 12;
+
+    // ----- DETAILED INFORMATION -----
+    const drawSection = (title, contentLines, iconColor) => {
+        pdf.setFillColor(iconColor[0], iconColor[1], iconColor[2]);
+        pdf.rect(margin, y - 5, 4, 6, 'F');
+
+        pdf.setFontSize(15);
+        pdf.setTextColor(17, 24, 39);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(title, margin + 8, y);
+
+        y += 11; // Increased gap under topics
         pdf.setFontSize(10);
-        disease.symptoms.forEach((symptom, index) => {
-            pdf.text(`${index + 1}. ${symptom}`, 25, yPosition);
-            yPosition += 6;
-        });
+        pdf.setTextColor(55, 65, 81);
+        pdf.setFont('helvetica', 'normal');
 
-        yPosition += 5;
-    }
+        const lines = pdf.splitTextToSize(contentLines, pageWidth - 2 * margin);
+        pdf.text(lines, margin, y);
+        y += (lines.length * 5) + 8;
+    };
 
-    // Check if we need a new page
-    if (yPosition > pageHeight - 60) {
-        pdf.addPage();
-        yPosition = 20;
+    drawSection('Disease Description', disease.description, [59, 130, 246]);
+
+    if (disease.symptoms && disease.symptoms.length > 0) {
+        drawSection('Observable Symptoms', disease.symptoms.map(s => `• ${s}`).join('\n'), [245, 158, 11]);
     }
 
     // Recommendations
-    if (recommendations) {
-        pdf.setFontSize(14);
-        pdf.text('Treatment Recommendations', 20, yPosition);
+    const management = disease.management || [];
+    const prevention = disease.prevention || [];
 
-        yPosition += 8;
-        pdf.setFontSize(10);
+    if (management.length > 0 || prevention.length > 0) {
+        pdf.setFillColor(16, 185, 129);
+        pdf.rect(margin, y - 5, 4, 6, 'F');
+        pdf.setFontSize(15);
+        pdf.setTextColor(17, 24, 39);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Action Plan & Treatment', margin + 8, y);
 
-        if (recommendations.treatments) {
-            pdf.setFont(undefined, 'bold');
-            pdf.text('Immediate Actions:', 25, yPosition);
-            pdf.setFont(undefined, 'normal');
-            yPosition += 6;
-
-            recommendations.treatments.forEach((treatment, index) => {
-                const lines = pdf.splitTextToSize(`${index + 1}. ${treatment}`, pageWidth - 50);
-                pdf.text(lines, 30, yPosition);
-                yPosition += lines.length * 5;
+        y += 11; // Increased gap under Action Plan topic
+        if (management.length > 0) {
+            pdf.setFontSize(10.5);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('Immediate Field Management:', margin, y);
+            y += 8; // Increased gap under subtopic
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'normal');
+            management.forEach(m => {
+                const lines = pdf.splitTextToSize(`- ${m}`, pageWidth - 2 * margin);
+                pdf.text(lines, margin + 5, y);
+                y += lines.length * 5.5;
             });
-
-            yPosition += 5;
+            y += 3;
         }
 
-        if (recommendations.preventive) {
-            pdf.setFont(undefined, 'bold');
-            pdf.text('Preventive Measures:', 25, yPosition);
-            pdf.setFont(undefined, 'normal');
-            yPosition += 6;
-
-            recommendations.preventive.forEach((measure, index) => {
-                const lines = pdf.splitTextToSize(`${index + 1}. ${measure}`, pageWidth - 50);
-                pdf.text(lines, 30, yPosition);
-                yPosition += lines.length * 5;
+        if (prevention.length > 0) {
+            pdf.setFontSize(10.5);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('Long-term Preventive Measures:', margin, y);
+            y += 8; // Increased gap under subtopic
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'normal');
+            prevention.forEach(p => {
+                const lines = pdf.splitTextToSize(`- ${p}`, pageWidth - 2 * margin);
+                pdf.text(lines, margin + 5, y);
+                y += lines.length * 5.5;
             });
-        }
-    }
-
-    // Add image if available
-    if (image) {
-        pdf.addPage();
-        pdf.setFontSize(14);
-        pdf.text('Analyzed Image', pageWidth / 2, 20, { align: 'center' });
-
-        try {
-            // Add image to PDF
-            const imgWidth = pageWidth - 40;
-            const imgHeight = (imgWidth * 3) / 4; // Maintain aspect ratio
-            pdf.addImage(image, 'JPEG', 20, 30, imgWidth, imgHeight);
-        } catch (error) {
-            console.error('Error adding image to PDF:', error);
         }
     }
 
     // Footer
-    const footerY = pageHeight - 10;
     pdf.setFontSize(8);
-    pdf.setTextColor(150, 150, 150);
-    pdf.text('Plant Disease Detection System', pageWidth / 2, footerY, { align: 'center' });
+    pdf.setTextColor(156, 163, 175);
+    pdf.text('Plant Disease Detection System - Final Year Project Output', pageWidth / 2, pageHeight - 10, { align: 'center' });
 
     return pdf;
 };
+
 
 /**
  * Export analysis results to PDF
@@ -152,7 +167,7 @@ export const exportToPDF = async (analysisData, filename = 'disease-analysis-rep
 };
 
 /**
- * Export element to PDF (for custom layouts)
+ * Export element to PDF 
  */
 export const exportElementToPDF = async (elementId, filename = 'report.pdf') => {
     try {
