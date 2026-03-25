@@ -4,7 +4,7 @@ import mockAPI from './mockData';
 // API base URL 
 const API_BASE_URL = import.meta.env.PROD
     ? '/api'
-    : (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
+    : (import.meta.env.VITE_API_URL || 'http://localhost:7860/api');
 
 // Use mock API for development
 const USE_MOCK_API = import.meta.env.PROD
