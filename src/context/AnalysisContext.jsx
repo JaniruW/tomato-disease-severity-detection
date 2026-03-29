@@ -2,9 +2,7 @@ import React, { Component, createContext } from 'react';
 
 const AnalysisContext = createContext();
 
-/**
- * AnalysisProvider - Class-based Context Provider for OOP Architecture
- */
+
 class AnalysisProvider extends Component {
     constructor(props) {
         super(props);
@@ -39,7 +37,7 @@ class AnalysisProvider extends Component {
 
     /**
      * Set analyzing state
-     * @param {boolean} isAnalyzing - Whether analysis is in progress
+     * @param {boolean} isAnalyzing 
      */
     setIsAnalyzing(isAnalyzing) {
         this.setState({ isAnalyzing });

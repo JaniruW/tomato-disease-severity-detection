@@ -1,18 +1,26 @@
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+// Dynamic imports for jspdf and html2canvas to reduce initial bundle size
+const getPDFLibs = async () => {
+    const [jsPDF, html2canvas] = await Promise.all([
+        import('jspdf').then(m => m.default || m),
+        import('html2canvas').then(m => m.default || m)
+    ]);
+    return { jsPDF, html2canvas };
+};
+
 
 
 export const generatePDFReport = async (analysisData) => {
     const { disease, severity, confidence, timestamp } = analysisData;
 
+    // Load libraries on demand
+    const { jsPDF } = await getPDFLibs();
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 20;
     let y = 0;
 
-    // ----- HEADER BANNER -----
-    pdf.setFillColor(16, 185, 129); // Primary green
+    pdf.setFillColor(16, 185, 129);
     pdf.rect(0, 0, pageWidth, 40, 'F');
 
     pdf.setFontSize(22);
@@ -27,7 +35,6 @@ export const generatePDFReport = async (analysisData) => {
 
     y = 52;
 
-    // ----- SUMMARY DASHBOARD -----
     const cardWidth = (pageWidth - 2 * margin - 15) / 2;
     const cardHeight = 32;
 
@@ -97,7 +104,6 @@ export const generatePDFReport = async (analysisData) => {
 
     y += cardHeight + 12;
 
-    // ----- DETAILED INFORMATION -----
     const drawSection = (title, contentLines, iconColor) => {
         pdf.setFillColor(iconColor[0], iconColor[1], iconColor[2]);
         pdf.rect(margin, y - 5, 4, 6, 'F');
@@ -198,6 +204,9 @@ export const exportElementToPDF = async (elementId, filename = 'report.pdf') => 
         if (!element) {
             throw new Error('Element not found');
         }
+
+        // Load libraries on demand
+        const { jsPDF, html2canvas } = await getPDFLibs();
 
         const canvas = await html2canvas(element, {
             scale: 2,

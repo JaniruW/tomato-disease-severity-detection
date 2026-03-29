@@ -133,7 +133,7 @@ class APIService {
 // Create singleton instance
 const apiService = new APIService(API_BASE_URL, USE_MOCK_API);
 
-// Export the instance 
+// Export the instance
 export default apiService;
 
 // Also export the class for potential direct usage

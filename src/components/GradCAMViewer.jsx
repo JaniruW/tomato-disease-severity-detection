@@ -4,7 +4,7 @@ import Card from './ui/Card';
 import Button from './ui/Button';
 
 const GradCAMViewer = ({ gradcam, diseaseName }) => {
-    const [viewMode, setViewMode] = useState('side-by-side'); // 'side-by-side', 'overlay', 'original', 'heatmap'
+    const [viewMode, setViewMode] = useState('side-by-side');
     const [overlayOpacity, setOverlayOpacity] = useState(0.5);
     const [showInfo, setShowInfo] = useState(true);
 
@@ -40,9 +40,9 @@ const GradCAMViewer = ({ gradcam, diseaseName }) => {
                                         Advanced Lesion Detection
                                     </h4>
                                     <p className="text-sm text-purple-800 leading-relaxed">
-                                        We use <strong>Grad-CAM++</strong> to pinpoint infected areas. 
-                                        The <strong>Heatmap</strong> shows overall model focus, 
-                                        while <strong>Lesion Contours</strong> (yellow borders) 
+                                        We use <strong>Grad-CAM++</strong> to pinpoint infected areas.
+                                        The <strong>Heatmap</strong> shows overall model focus,
+                                        while <strong>Lesion Contours</strong> (yellow borders)
                                         automatically detect and outline specific symptoms.
                                     </p>
                                 </div>

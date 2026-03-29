@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react';
+import React, { Component, createRef, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Download, ArrowLeft, Eye, ClipboardList, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAnalysis } from '../context/AnalysisContext';
@@ -8,6 +8,10 @@ import SeverityCard from '../components/SeverityCard';
 import GradCAMViewer from '../components/GradCAMViewer';
 import RecommendationPanel from '../components/RecommendationPanel';
 import { exportToPDF } from '../utils/pdfExport';
+
+// Lazy load SeverityChart to defer recharts download
+const SeverityChart = lazy(() => import('../components/SeverityChart'));
+
 
 
 class ResultsPageClass extends Component {

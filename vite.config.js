@@ -4,4 +4,16 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-base': ['react', 'react-dom', 'react-router-dom', 'lucide-react'],
+        },
+
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
 })
+

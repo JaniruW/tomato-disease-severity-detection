@@ -220,9 +220,7 @@ class UploadPageClass extends Component {
     }
 }
 
-/**
- * Wrapper component to inject hooks into class component
- */
+
 const UploadPage = () => {
     const { setIsAnalyzing, saveAnalysis } = useAnalysis();
     const navigate = useNavigate();

@@ -91,7 +91,7 @@ class DiseaseSeverityNet(nn.Module):
         # Pass through first few layers manually
         x0 = self.features[0](x)   # Stem
         x1 = self.features[1](x0)
-        x2 = self.features[2](x1)  # <-- shallow feature
+        x2 = self.features[2](x1)  #shallow feature
 
         # Continue full backbone
         x_deep = x2
@@ -119,7 +119,7 @@ class DiseaseSeverityNet(nn.Module):
         return d_logits, s_logits
 
 
-# INFERENCE WRAPPER
+# INFERENCE
 class ModelInference:
     def __init__(self, model_path):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

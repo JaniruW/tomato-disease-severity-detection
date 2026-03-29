@@ -11,7 +11,7 @@ const RecommendationPanel = ({ disease, severity, diseaseId, severityLevel }) =>
 
     if (!effectiveDisease.id) return null;
 
-    // Get recommendations 
+    // Get recommendations
     const staticRecs = getRecommendations(effectiveDisease.id, (effectiveSeverity.level || 'mid').toLowerCase());
 
     const recommendations = {

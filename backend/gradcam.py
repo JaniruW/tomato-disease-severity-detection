@@ -14,8 +14,6 @@ class GradCAMPlusPlus:
         )
 
     def generate(self, img_tensor, class_idx):
-        # GradCAM++ needs gradients of the score w.r.t activations
-        #ensure input requires grad for backprop
         self.model.zero_grad()
         x = img_tensor.detach().clone().requires_grad_(True)
         self._acts = None
@@ -25,7 +23,7 @@ class GradCAMPlusPlus:
         score = d_logits[0, class_idx]
         
         # Backward pass
-        # We use torch.autograd.grad for direct access to gradients of score w.r.t activations
+        # torch.autograd.grad for direct access to gradients of score w.r.t activations
         grads = torch.autograd.grad(score, self._acts, create_graph=False)[0]
         
         grads_sq = grads ** 2
@@ -51,16 +49,13 @@ class GradCAMPlusPlus:
         return cam
 
     def generate_visuals(self, image, cam, threshold_pct=60):
-        """
-        Implements the user's visualization logic including thresholding and contours.
-        Returns multiple versions of the visual data.
-        """
+
         # Prepare image (RGB, 0-1, 224x224)
         if hasattr(image, 'convert'):
             image = image.convert('RGB').resize((224, 224))
         img_np = np.array(image) / 255.0
 
-        # Thresholding (User logic)
+        # Thresholding 
         threshold = np.percentile(cam, threshold_pct)
         cam_thresh = np.where(cam >= threshold, cam, 0).astype(np.float32)
         cam_thresh -= cam_thresh.min()
@@ -70,7 +65,7 @@ class GradCAMPlusPlus:
         heatmap = cv2.applyColorMap(np.uint8(255 * cam_thresh), cv2.COLORMAP_JET)
         heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB) / 255.0
         
-        # Fusion/Overlay (User formula: heatmap*alpha*0.7 + img_np*(1-alpha*0.4))
+        # Fusion/Overlay 
         alpha = cam_thresh[:, :, np.newaxis]
         overlay = np.clip(heatmap * alpha * 0.7 + img_np * (1 - alpha * 0.4), 0, 1)
 
