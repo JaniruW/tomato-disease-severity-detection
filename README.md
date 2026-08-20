@@ -1,13 +1,4 @@
----
-title: Tomato Disease Detection
-emoji: 🍅
-colorFrom: green
-colorTo: red
-sdk: docker
-pinned: false
-app_file: app.py
-app_port: 7860
----
+
 
 # Plant Disease Detection System
 
@@ -205,20 +196,7 @@ To connect to a real backend:
 }
 ```
 
-## Customization
 
-### Colors
-Edit `tailwind.config.js` to customize severity colors and theme:
-
-```javascript
-colors: {
-  severity: {
-    early: '#10b981',  // green
-    mid: '#f59e0b',    // yellow/orange
-    late: '#ef4444',   // red
-  }
-}
-```
 
 ### Disease Information
 Update `src/utils/constants.js` to add or modify disease information and recommendations.
@@ -237,6 +215,3 @@ This project is part of a final year academic project.
 - Deep learning model researchers
 - Open source community
 
----
-
-**Final Year Project** - Plant Disease Detection System
